@@ -9,15 +9,15 @@ import (
 
 // Answer - type of answer
 type Answer struct {
-	Text    string
-	IsRight bool
+	Text    string `json:"text"`
+	IsRight bool   `json:"is_right"`
 }
 
 // QA - type of Question & Answer
 type QA struct {
 	ID                            string
-	Question                      string
-	Answers                       []*Answer
+	Question                      string    `json:"question"`
+	Answers                       []*Answer `json:"answers"`
 	IsAnswered, Result, IsChanged bool
 }
 

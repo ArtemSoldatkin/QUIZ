@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
-	qz "quiz/quiz"
+	"log"
+	"net/http"
+	"quiz/api"
 )
 
 func main() {
-	quiz := qz.QA{Question: "Test?", Answers: []*qz.Answer{&qz.Answer{Text: "Nope"}, &qz.Answer{Text: "Yes", IsRight: true}}}
-	quiz.Shuffle()
-	fmt.Println(quiz)
+	r := api.NewRouter()
+	log.Fatal(http.ListenAndServe(":8000", r))
 
 }

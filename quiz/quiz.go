@@ -4,13 +4,21 @@ import (
 	"errors"
 	"math/rand"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // Quiz - type of quiz
 type Quiz struct {
+	ID     string
 	Title  string
 	QAS    []*QA
 	Result *QuizResult
+}
+
+// Init - initialize quiz
+func (q *Quiz) Init() {
+	q.ID = uuid.New().String()
 }
 
 // Shuffle - shuffle quiz questions and answers
@@ -30,6 +38,11 @@ func (q Quiz) Find(id string) (qa *QA) {
 		}
 	}
 	return nil
+}
+
+// AddQA - add new q&a to quiz
+func (q Quiz) AddQA(qa *QA) {
+	q.QAS = append(q.QAS, qa)
 }
 
 // EditQA - edit q&a by id
