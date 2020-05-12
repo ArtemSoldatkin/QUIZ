@@ -21,6 +21,11 @@ func (q *Quiz) Init() {
 	q.ID = uuid.New().String()
 }
 
+// Edit - edit quiz
+func (q *Quiz) Edit(title string) {
+	q.Title = title
+}
+
 // Shuffle - shuffle quiz questions and answers
 func (q *Quiz) Shuffle() {
 	rand.Seed(time.Now().UnixNano())
@@ -32,6 +37,9 @@ func (q *Quiz) Shuffle() {
 
 // Find - find q&a by id
 func (q Quiz) Find(id string) (qa *QA) {
+	if id == "" {
+		return nil
+	}
 	for _, q := range q.QAS {
 		if q.ID == id {
 			return q
