@@ -11,7 +11,11 @@ import (
 // QUIZs - list of quiz
 var QUIZs []*qz.Quiz
 
-// Get QUIZ LIST
+// GetQuizList - get quiz list
+func GetQuizList(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(QUIZs)
+}
 
 // CreateQUIZ - create quiz
 func CreateQUIZ(w http.ResponseWriter, r *http.Request) {
@@ -149,14 +153,49 @@ func ShuffleAnswers(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("OK"))
 }
 
-//SetAnswer
+// SetAnswer - set user's answer to question by id
+func SetAnswer(w http.ResponseWriter, r *http.Request) {
+	var answers []int
+	json.NewDecoder(r.Body).Decode(&answers)
+	qParams := mux.Vars(r)
+	quizID := qParams["id"]
+	questionID := qParams["qa_id"]
+	quiz := findQuiz(quizID)
+	if quiz == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Bad request"))
+		return
+	}
+	res, err := quiz.SetAnswer(questionID, answers)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Bad request"))
+		return
+	}
+	result := make(map[string]bool)
+	result["result"] = res
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(result)
+}
 
-// GetResults
+// GetResults - get quiz results by id
+func GetResults(w http.ResponseWriter, r *http.Request) {
+	qParams := mux.Vars(r)
+	quizID := qParams["id"]
+	quiz := findQuiz(quizID)
+	if quiz == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Quiz is not found"))
+		return
+	}
+	result := quiz.GetResults()
+	json.NewEncoder(w).Encode(result)
+}
 
 // NewRouter - create router
 func NewRouter() *mux.Router {
 	r := mux.NewRouter()
-	// get quiz list
+	r.HandleFunc("/", GetQuizList).Methods("GET")
 	r.HandleFunc("/create-quiz", CreateQUIZ).Methods("POST")
 	r.HandleFunc("/get-quiz/{id}", GetQuiz).Methods("GET")
 	r.HandleFunc("/edit-quiz/{id}", EditQuiz).Methods("PUT")
@@ -165,7 +204,7 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/add-question/{id}", AddQuestion).Methods("POST")
 	r.HandleFunc("/edit-question/{id}/{qa_id}", EditQuestion).Methods("PUT")
 	r.HandleFunc("/shuffle-answers/{id}/{qa_id}", ShuffleAnswers).Methods("PUT")
-	// set answer
-	// get results
+	r.HandleFunc("/set-answer/{id}/{qa_id}", SetAnswer).Methods("POST")
+	r.HandleFunc("/get-results/{id}", GetResults).Methods("GET")
 	return r
 }

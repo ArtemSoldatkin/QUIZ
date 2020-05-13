@@ -62,7 +62,7 @@ func (q Quiz) EditQA(id string, question string, answers []*Answer) {
 	qa.Edit(question, answers)
 }
 
-// SetAnswer - set user's answer to question
+// SetAnswer - set user's answer to question by id
 func (q Quiz) SetAnswer(id string, answers []int) (bool, error) {
 	qa := q.Find(id)
 	if qa == nil {
