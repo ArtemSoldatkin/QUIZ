@@ -36,13 +36,24 @@ func (qa *QA) Edit(question string, answers []*Answer) {
 
 // Shuffle - shuffle answers in Q&A
 func (qa *QA) Shuffle() {
-	a := qa.Answers
+	a := make([]*Answer, len(qa.Answers))
+	copy(a, qa.Answers)
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(a), func(i, j int) { a[i], a[j] = a[j], a[i] })
+	qa.Answers = a
 }
 
 // checkResult - compare user answers with the right answers
 func (qa QA) checkResult(result []int) (isRight bool) {
+	c := 0
+	for _, a := range qa.Answers {
+		if a.IsRight {
+			c++
+		}
+	}
+	if len(result) != c {
+		return false
+	}
 	for _, r := range result {
 		if r < len(qa.Answers) && qa.Answers[r].IsRight {
 			continue
