@@ -33,7 +33,7 @@ func CreateQUIZ(w http.ResponseWriter, r *http.Request) {
 func GetQuiz(w http.ResponseWriter, r *http.Request) {
 	qParam := mux.Vars(r)
 	id := qParam["id"]
-	quiz := findQuiz(id)
+	quiz, _ := findQuiz(id)
 	if quiz == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad request"))
@@ -49,7 +49,7 @@ func EditQuiz(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&params)
 	qParam := mux.Vars(r)
 	id := qParam["id"]
-	quiz := findQuiz(id)
+	quiz, _ := findQuiz(id)
 	if quiz == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad request"))
@@ -60,11 +60,25 @@ func EditQuiz(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("OK"))
 }
 
+// RemoveQuiz - remove quiz from list
+func RemoveQuiz(w http.ResponseWriter, r *http.Request) {
+	qParam := mux.Vars(r)
+	id := qParam["id"]
+	err := removeQuiz(id)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Quiz is not found"))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
+}
+
 // ShuffleQuiz - shuffle questions and answers in quiz
 func ShuffleQuiz(w http.ResponseWriter, r *http.Request) {
 	qParam := mux.Vars(r)
 	id := qParam["id"]
-	quiz := findQuiz(id)
+	quiz, _ := findQuiz(id)
 	if quiz == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad request"))
@@ -80,13 +94,13 @@ func GetQuestion(w http.ResponseWriter, r *http.Request) {
 	qParams := mux.Vars(r)
 	quizID := qParams["id"]
 	questionID := qParams["qa_id"]
-	quiz := findQuiz(quizID)
+	quiz, _ := findQuiz(quizID)
 	if quiz == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad request"))
 		return
 	}
-	qa := quiz.Find(questionID)
+	qa, _ := quiz.Find(questionID)
 	if qa == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad request"))
@@ -102,7 +116,7 @@ func AddQuestion(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&qa)
 	qParams := mux.Vars(r)
 	id := qParams["id"]
-	quiz := findQuiz(id)
+	quiz, _ := findQuiz(id)
 	if quiz == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad request"))
@@ -120,7 +134,7 @@ func EditQuestion(w http.ResponseWriter, r *http.Request) {
 	qParams := mux.Vars(r)
 	id := qParams["id"]
 	qaID := qParams["qa_id"]
-	quiz := findQuiz(id)
+	quiz, _ := findQuiz(id)
 	if quiz == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad request"))
@@ -131,18 +145,39 @@ func EditQuestion(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("OK"))
 }
 
+//RemoveQuestion - remove question from list by id
+func RemoveQuestion(w http.ResponseWriter, r *http.Request) {
+	qParams := mux.Vars(r)
+	quizID := qParams["id"]
+	qaID := qParams["qa_id"]
+	quiz, _ := findQuiz(quizID)
+	if quiz == nil {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Quiz is not found"))
+		return
+	}
+	err := quiz.RemoveQA(qaID)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Q&A not found"))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
+}
+
 // ShuffleAnswers - shuffle answers in q&a
 func ShuffleAnswers(w http.ResponseWriter, r *http.Request) {
 	qParams := mux.Vars(r)
 	quizID := qParams["id"]
 	questionID := qParams["qa_id"]
-	quiz := findQuiz(quizID)
+	quiz, _ := findQuiz(quizID)
 	if quiz == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad request"))
 		return
 	}
-	qa := quiz.Find(questionID)
+	qa, _ := quiz.Find(questionID)
 	if qa == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad request"))
@@ -160,7 +195,7 @@ func SetAnswer(w http.ResponseWriter, r *http.Request) {
 	qParams := mux.Vars(r)
 	quizID := qParams["id"]
 	questionID := qParams["qa_id"]
-	quiz := findQuiz(quizID)
+	quiz, _ := findQuiz(quizID)
 	if quiz == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad request"))
@@ -182,7 +217,7 @@ func SetAnswer(w http.ResponseWriter, r *http.Request) {
 func GetResults(w http.ResponseWriter, r *http.Request) {
 	qParams := mux.Vars(r)
 	quizID := qParams["id"]
-	quiz := findQuiz(quizID)
+	quiz, _ := findQuiz(quizID)
 	if quiz == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Quiz is not found"))
@@ -199,10 +234,12 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/create-quiz", CreateQUIZ).Methods("POST")
 	r.HandleFunc("/get-quiz/{id}", GetQuiz).Methods("GET")
 	r.HandleFunc("/edit-quiz/{id}", EditQuiz).Methods("PUT")
+	r.HandleFunc("/remove-quiz/{id}", RemoveQuiz).Methods("DELETE")
 	r.HandleFunc("/shuffle-quiz/{id}", ShuffleQuiz).Methods("PUT")
 	r.HandleFunc("/get-question/{id}/{qa_id}", GetQuestion).Methods("GET")
 	r.HandleFunc("/add-question/{id}", AddQuestion).Methods("POST")
 	r.HandleFunc("/edit-question/{id}/{qa_id}", EditQuestion).Methods("PUT")
+	r.HandleFunc("/remove-question/{id}/{qa_id}", RemoveQuestion).Methods("DELETE")
 	r.HandleFunc("/shuffle-answers/{id}/{qa_id}", ShuffleAnswers).Methods("PUT")
 	r.HandleFunc("/set-answer/{id}/{qa_id}", SetAnswer).Methods("POST")
 	r.HandleFunc("/get-results/{id}", GetResults).Methods("GET")

@@ -36,16 +36,16 @@ func (q *Quiz) Shuffle() {
 }
 
 // Find - find q&a by id
-func (q Quiz) Find(id string) (qa *QA) {
+func (q Quiz) Find(id string) (*QA, int) {
 	if id == "" {
-		return nil
+		return nil, -1
 	}
-	for _, q := range q.QAS {
-		if q.ID == id {
-			return q
+	for i, qa := range q.QAS {
+		if qa.ID == id {
+			return qa, i
 		}
 	}
-	return nil
+	return nil, -1
 }
 
 // AddQA - add new q&a to quiz
@@ -55,16 +55,28 @@ func (q Quiz) AddQA(qa *QA) {
 
 // EditQA - edit q&a by id
 func (q Quiz) EditQA(id string, question string, answers []*Answer) {
-	qa := q.Find(id)
+	qa, _ := q.Find(id)
 	if qa == nil {
 		return
 	}
 	qa.Edit(question, answers)
 }
 
+// RemoveQA - remove q&a from q&a list
+func (q *Quiz) RemoveQA(id string) error {
+	qa, i := q.Find(id)
+	if qa == nil {
+		return errors.New("Q&A is not found")
+	}
+	copy(q.QAS[i:], q.QAS[i+1:])
+	q.QAS[len(q.QAS)-1] = nil
+	q.QAS = q.QAS[:len(q.QAS)-1]
+	return nil
+}
+
 // SetAnswer - set user's answer to question by id
 func (q Quiz) SetAnswer(id string, answers []int) (bool, error) {
-	qa := q.Find(id)
+	qa, _ := q.Find(id)
 	if qa == nil {
 		return false, errors.New("Q&A is not found")
 	}

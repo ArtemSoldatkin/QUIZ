@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestInit(t *testing.T) {
+func TestQAInit(t *testing.T) {
 	qaTest := QA{}
 	qaTest.Init()
 	if qaTest.ID == "" {
@@ -12,7 +12,7 @@ func TestInit(t *testing.T) {
 	}
 }
 
-func TestEdit(t *testing.T) {
+func TestQAEdit(t *testing.T) {
 	var answers []*Answer
 	ans1 := Answer{Text: "ans1", IsRight: true}
 	answers = append(answers, &ans1)
@@ -30,7 +30,7 @@ func TestEdit(t *testing.T) {
 	}
 }
 
-func TestShuffle(t *testing.T) {
+func TestQAShuffle(t *testing.T) {
 	var answers []*Answer
 	a1 := Answer{Text: "a1", IsRight: true}
 	a2 := Answer{Text: "a2", IsRight: true}
@@ -51,7 +51,7 @@ func TestShuffle(t *testing.T) {
 	}
 }
 
-func TestCheckResult(t *testing.T) {
+func TestQACheckResult(t *testing.T) {
 	var answers []*Answer
 	a1 := Answer{Text: "a1", IsRight: true}
 	a2 := Answer{Text: "a2"}
@@ -76,7 +76,7 @@ func TestCheckResult(t *testing.T) {
 	}
 }
 
-func TestSetAnswer(t *testing.T) {
+func TestQASetAnswer(t *testing.T) {
 	var answers []*Answer
 	a1 := Answer{Text: "a1", IsRight: true}
 	a2 := Answer{Text: "a2"}
