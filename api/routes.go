@@ -35,8 +35,8 @@ func GetQuiz(w http.ResponseWriter, r *http.Request) {
 	id := qParam["id"]
 	quiz, _ := findQuiz(id)
 	if quiz == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Bad request"))
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Quiz is not found"))
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -51,8 +51,8 @@ func EditQuiz(w http.ResponseWriter, r *http.Request) {
 	id := qParam["id"]
 	quiz, _ := findQuiz(id)
 	if quiz == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Bad request"))
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Quiz is not found"))
 		return
 	}
 	quiz.Edit(params["title"])
@@ -80,8 +80,8 @@ func ShuffleQuiz(w http.ResponseWriter, r *http.Request) {
 	id := qParam["id"]
 	quiz, _ := findQuiz(id)
 	if quiz == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Bad request"))
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Quiz is not found"))
 		return
 	}
 	quiz.Shuffle()
@@ -96,14 +96,14 @@ func GetQuestion(w http.ResponseWriter, r *http.Request) {
 	questionID := qParams["qa_id"]
 	quiz, _ := findQuiz(quizID)
 	if quiz == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Bad request"))
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Quiz is not found"))
 		return
 	}
 	qa, _ := quiz.Find(questionID)
 	if qa == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Bad request"))
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Question is not found"))
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -118,8 +118,8 @@ func AddQuestion(w http.ResponseWriter, r *http.Request) {
 	id := qParams["id"]
 	quiz, _ := findQuiz(id)
 	if quiz == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Bad request"))
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Quiz is not found"))
 		return
 	}
 	quiz.AddQA(&qa)
@@ -136,8 +136,8 @@ func EditQuestion(w http.ResponseWriter, r *http.Request) {
 	qaID := qParams["qa_id"]
 	quiz, _ := findQuiz(id)
 	if quiz == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Bad request"))
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Quiz is not found"))
 		return
 	}
 	quiz.EditQA(qaID, qa.Question, qa.Answers)
@@ -159,7 +159,7 @@ func RemoveQuestion(w http.ResponseWriter, r *http.Request) {
 	err := quiz.RemoveQA(qaID)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Q&A not found"))
+		w.Write([]byte("Question is not found"))
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -173,14 +173,14 @@ func ShuffleAnswers(w http.ResponseWriter, r *http.Request) {
 	questionID := qParams["qa_id"]
 	quiz, _ := findQuiz(quizID)
 	if quiz == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Bad request"))
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Quiz is not found"))
 		return
 	}
 	qa, _ := quiz.Find(questionID)
 	if qa == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Bad request"))
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Question is not found"))
 		return
 	}
 	qa.Shuffle()
@@ -197,8 +197,8 @@ func SetAnswer(w http.ResponseWriter, r *http.Request) {
 	questionID := qParams["qa_id"]
 	quiz, _ := findQuiz(quizID)
 	if quiz == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Bad request"))
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Quiz is not found"))
 		return
 	}
 	res, err := quiz.SetAnswer(questionID, answers)
@@ -236,11 +236,13 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/edit-quiz/{id}", EditQuiz).Methods("PUT")
 	r.HandleFunc("/remove-quiz/{id}", RemoveQuiz).Methods("DELETE")
 	r.HandleFunc("/shuffle-quiz/{id}", ShuffleQuiz).Methods("PUT")
+
 	r.HandleFunc("/get-question/{id}/{qa_id}", GetQuestion).Methods("GET")
 	r.HandleFunc("/add-question/{id}", AddQuestion).Methods("POST")
 	r.HandleFunc("/edit-question/{id}/{qa_id}", EditQuestion).Methods("PUT")
 	r.HandleFunc("/remove-question/{id}/{qa_id}", RemoveQuestion).Methods("DELETE")
 	r.HandleFunc("/shuffle-answers/{id}/{qa_id}", ShuffleAnswers).Methods("PUT")
+
 	r.HandleFunc("/set-answer/{id}/{qa_id}", SetAnswer).Methods("POST")
 	r.HandleFunc("/get-results/{id}", GetResults).Methods("GET")
 	return r
