@@ -19,6 +19,7 @@ type Quiz struct {
 // Init - initialize quiz
 func (q *Quiz) Init() {
 	q.ID = uuid.New().String()
+	q.Result = &QuizResult{}
 }
 
 // Edit - edit quiz
@@ -49,7 +50,7 @@ func (q Quiz) Find(id string) (*QA, int) {
 }
 
 // AddQA - add new q&a to quiz
-func (q Quiz) AddQA(qa *QA) {
+func (q *Quiz) AddQA(qa *QA) {
 	q.QAS = append(q.QAS, qa)
 }
 
