@@ -4,13 +4,14 @@ _To start:_<br/> docker-compose up -d --build
 
 ## API Documentation
 
-_(WIP)Get list of quiz_<br/> Return list of saved quiz.
+_Get list of quiz_<br/> Return list of saved quiz.
 
 -   URL<br> /
 -   Method<br/> GET
 -   URL Params<br/> None
 -   Data Params<br/> None
--   Success Response:<br/> Code: 200 OK<br/> Content: [ ... ]
+-   Success Response:<br/> Code: 200 OK<br/> Content: [{"ID":"5d1d18a4-e630-4bd9-a9a3-1cefbef41403","Title":"quiz
+    1","QAS":null,"Result":{"Total":0,"Right":0,"Changed":0}}]
 -   Error Response:<br/> None
 
 _Create quiz_<br/> Create quiz and add to list.
@@ -22,13 +23,14 @@ _Create quiz_<br/> Create quiz and add to list.
 -   Success Response:<br/> Code: 200 OK<br/> Content: "OK"
 -   Error Response:<br/> None
 
-_(WIP)Get quiz_<br/> Get quiz by id.
+_Get quiz_<br/> Get quiz by id.
 
 -   URL<br> /get-quiz/:id
 -   Method<br/> GET
 -   URL Params<br/> id=[string]
 -   Data Params<br/> None
--   Success Response:<br/> Code: 200 OK<br/> Content: [ ... ]
+-   Success Response:<br/> Code: 200 OK<br/> Content: {"ID":"5d1d18a4-e630-4bd9-a9a3-1cefbef41403","Title":"quiz
+    1","QAS":null,"Result":{"Total":0,"Right":0,"Changed":0}}
 -   Error Response:<br/> Code: 404 Not Found<br/> Content: "Quiz is not found"
 
 _Edit quiz_<br/> Edit quiz by id.
@@ -58,13 +60,14 @@ _Shuffle quiz_<br/> Shuffle quiz by id.
 -   Success Response:<br/> Code: 200 OK<br/> Content: "OK"
 -   Error Response:<br/> Code: 404 Not Found<br/> Content: "Quiz is not found"
 
-_(WIP)Get question_<br/> Get question from quiz by id.
+_Get question_<br/> Get question from quiz by id.
 
 -   URL<br> /get-question/:id/:qa_id
 -   Method<br/> GET
 -   URL Params<br/> id=[string]<br/> qa_id=[string]
 -   Data Params<br/> None
--   Success Response:<br/> Code: 200 OK<br/> Content: [ ... ]
+-   Success Response:<br/> Code: 200 OK<br/> Content:
+    {"ID":"a395eef5-a364-4153-8cf8-a8bbd47a3803","question":"test","answers":null,"IsAnswered":false,"Result":false,"IsChanged":false}
 -   Error Response:<br/> Code: 404 Not Found<br/> Content: "Quiz is not found" OR "Question is not found"
 
 _Add question_<br/> Add question to quiz.
@@ -72,7 +75,7 @@ _Add question_<br/> Add question to quiz.
 -   URL<br> /add-question/:id
 -   Method<br/> POST
 -   URL Params<br/> id=[string]
--   Data Params<br/> None
+-   Data Params<br/> question=[string]
 -   Success Response:<br/> Code: 200 OK<br/> Content: "OK"
 -   Error Response:<br/> Code: 404 Not Found<br/> Content: "Quiz is not found"
 
@@ -108,8 +111,8 @@ _(WIP)Set answer_<br/> Set answer to question from quiz by id.
 -   URL<br> /set-answer/:id/:qa_id
 -   Method<br/> POST
 -   URL Params<br/> id=[string]<br/> qa_id=[string]
--   Data Params<br/> None
--   Success Response:<br/> Code: 200 OK<br/> Content: [ ... ]
+-   Data Params<br/> [integer]
+-   Success Response:<br/> Code: 200 OK<br/> Content: {"result":false}
 -   Error Response:<br/> None
 
 _Get results_<br/> Get quiz results by id.
@@ -118,5 +121,5 @@ _Get results_<br/> Get quiz results by id.
 -   Method<br/> GET
 -   URL Params<br/> id=[string]
 -   Data Params<br/> None
--   Success Response:<br/> Code: 200 OK<br/> Content: [ ... ]
+-   Success Response:<br/> Code: 200 OK<br/> Content: {"Total":1,"Right":1,"Changed":1}
 -   Error Response:<br/> Code: 404 Not Found<br/> Content: "Quiz is not found"

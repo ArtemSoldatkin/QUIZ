@@ -51,6 +51,7 @@ func (q Quiz) Find(id string) (*QA, int) {
 
 // AddQA - add new q&a to quiz
 func (q *Quiz) AddQA(qa *QA) {
+	qa.Init()
 	q.QAS = append(q.QAS, qa)
 }
 
